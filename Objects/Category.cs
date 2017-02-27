@@ -29,6 +29,7 @@ namespace ToDoList
                 return (idEquality && nameEquality);
             }
         }
+
         public override int GetHashCode()
         {
             return this.GetName().GetHashCode();
@@ -38,14 +39,17 @@ namespace ToDoList
         {
             return _id;
         }
+
         public string GetName()
         {
             return _name;
         }
+
         public void SetName(string newName)
         {
             _name = newName;
         }
+
         public static List<Category> GetAll()
         {
             List<Category> allCategories = new List<Category>{};
@@ -251,6 +255,8 @@ namespace ToDoList
                 conn.Close();
             }
         }
+
+        
 
     }
 }

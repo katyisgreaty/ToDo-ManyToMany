@@ -281,6 +281,45 @@ namespace ToDoList
             return categories;
         }
 
+        public static List<Task> GetCompleted()
+        {
+            SqlConnection conn = DB.Connection();
+            conn.Open();
+
+            List<Task> CompletedTasks = new List<Task>{};
+
+            SqlCommand taskQuery = new SqlCommand("SELECT * FROM tasks WHERE completed = 1;", conn);
+
+            SqlDataReader rdr = taskQuery.ExecuteReader();
+            while(rdr.Read())
+            {
+                int thisTaskId = rdr.GetInt32(0);
+                string taskDescription = rdr.GetString(1);
+                bool taskComplete;
+                if (rdr.GetByte(2) == 1)
+                {
+                    taskComplete = true;
+                }
+                else
+                {
+                    taskComplete = false;
+                }
+                Task foundTask = new Task(taskDescription, taskComplete, thisTaskId);
+                CompletedTasks.Add(foundTask);
+            }
+
+            if (rdr != null)
+            {
+                rdr.Close();
+            }
+
+            if (conn != null)
+            {
+                conn.Close();
+            }
+            return CompletedTasks;
+        }
+
         public void Delete()
         {
             SqlConnection conn = DB.Connection();
