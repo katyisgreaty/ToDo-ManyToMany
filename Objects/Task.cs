@@ -60,6 +60,18 @@ namespace ToDoList
             }
         }
 
+        public string TaskUserViewComplete()
+         {
+             if (this._complete == true)
+             {
+                 return "Completed";
+             }
+             else
+             {
+                 return "Not yet completed";
+             }
+         }
+
         public int GetId()
         {
             return _id;

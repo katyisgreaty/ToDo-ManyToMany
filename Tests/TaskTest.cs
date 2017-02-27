@@ -155,8 +155,6 @@ namespace ToDoList
             Task testTask2 = new Task("Buy plane ticket", false);
             testTask2.Save();
 
-            // List<Task> taskList = new List<Task>{testTask1, testTask2};
-
             //Act
             List<Task> savedTasks = Task.GetCompleted();
             List<Task> testList = new List<Task> {testTask1};

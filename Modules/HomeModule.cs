@@ -39,7 +39,7 @@ namespace ToDoList
             };
 
             Post["/tasks/new"] = _ => {
-                Task newTask = new Task(Request.Form["task-description"]);
+                Task newTask = new Task(Request.Form["task-description"], Request.Form["completed"]);
                 newTask.Save();
                 return View["success.cshtml"];
             };
@@ -77,7 +77,7 @@ namespace ToDoList
                 task.AddCategory(category);
                 return View["success.cshtml"];
             };
-            
+
             Post["category/add_task"] = _ => {
                 Category category = Category.Find(Request.Form["category-id"]);
                 Task task = Task.Find(Request.Form["task-id"]);
