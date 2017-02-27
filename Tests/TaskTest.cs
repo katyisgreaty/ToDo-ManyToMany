@@ -6,20 +6,15 @@ using System.Data.SqlClient;
 
 namespace ToDoList
 {
-  public class ToDoTest : IDisposable
+  public class TaskTest : IDisposable
   {
-    public ToDoTest()
+    public TaskTest()
     {
       DBConfiguration.ConnectionString = "Data Source=(localdb)\\mssqllocaldb;Initial Catalog=todo_test;Integrated Security=SSPI;";
     }
 
-    public void Dispose()
-    {
-      Task.DeleteAll();
-    }
-
     [Fact]
-    public void Test_DatabaseEmptyAtFirst()
+    public void Test_EmptyAtFirst()
     {
       //Arrange, Act
       int result = Task.GetAll().Count;
@@ -27,12 +22,13 @@ namespace ToDoList
       //Assert
       Assert.Equal(0, result);
     }
+
     [Fact]
     public void Test_EqualOverrideTrueForSameDescription()
     {
       //Arrange, Act
-      Task firstTask = new Task("Mow the lawn", 1, "01-02-2017");
-      Task secondTask = new Task("Mow the lawn", 1, "01-02-2017");
+      Task firstTask = new Task("Mow the lawn");
+      Task secondTask = new Task("Mow the lawn");
 
       //Assert
       Assert.Equal(firstTask, secondTask);
@@ -42,7 +38,7 @@ namespace ToDoList
     public void Test_Save()
     {
       //Arrange
-      Task testTask = new Task("Mow the lawn", 1, "01-02-2017");
+      Task testTask = new Task("Mow the lawn");
       testTask.Save();
 
       //Act
@@ -57,7 +53,7 @@ namespace ToDoList
     public void Test_SaveAssignsIdToObject()
     {
       //Arrange
-      Task testTask = new Task("Mow the lawn", 1, "01-02-2017");
+      Task testTask = new Task("Mow the lawn");
       testTask.Save();
 
       //Act
@@ -74,35 +70,20 @@ namespace ToDoList
     public void Test_FindFindsTaskInDatabase()
     {
       //Arrange
-      Task testTask = new Task("Mow the lawn", 1, "01-02-2017");
+      Task testTask = new Task("Mow the lawn");
       testTask.Save();
 
       //Act
-      Task foundTask = Task.Find(testTask.GetId());
+      Task result = Task.Find(testTask.GetId());
 
       //Assert
-      Assert.Equal(testTask, foundTask);
+      Assert.Equal(testTask, result);
     }
 
-    [Fact]
-    public void Test_SortByDate()
+    public void Dispose()
     {
-      //Arrange
-      Task testTask1 = new Task("Mow the lawn", 1, "01-02-2017");
-      Task testTask2 = new Task("Mow the lawn", 1, "01-03-2017");
-      Task testTask3 = new Task("Mow the lawn", 1, "01-01-2017");
-      testTask1.Save();
-      testTask2.Save();
-      testTask3.Save();
-
-      //Act
-      List<Task> result = Task.OrderByDate();
-      List<Task> testList = new List<Task>{testTask3, testTask1, testTask2};
-      Console.WriteLine(result);
-      Console.WriteLine(testList);
-
-      //Assert
-      Assert.Equal(testList, result);
+      Task.DeleteAll();
+      Category.DeleteAll();
     }
   }
 }
