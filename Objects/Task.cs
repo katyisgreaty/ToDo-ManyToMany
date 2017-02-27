@@ -332,6 +332,55 @@ namespace ToDoList
             return CompletedTasks;
         }
 
+        public void UpdateProperties(string newDescription, bool newCompleted)
+        {
+            SqlConnection conn = DB.Connection();
+            conn.Open();
+
+            SqlCommand cmd = new SqlCommand("UPDATE tasks SET description = @newDescription, completed = @NewCompleted OUTPUT INSERTED.* WHERE id = @TaskId;", conn);
+
+            SqlParameter newDescriptionParameter = new SqlParameter();
+            newDescriptionParameter.ParameterName = "@NewDescription";
+            newDescriptionParameter.Value = newDescription;
+            cmd.Parameters.Add(newDescriptionParameter);
+
+            SqlParameter newCompletedParameter = new SqlParameter();
+            newCompletedParameter.ParameterName = "@NewCompleted";
+            newCompletedParameter.Value = this.TranslateComplete();
+            cmd.Parameters.Add(newCompletedParameter);
+
+            SqlParameter taskIdParameter = new SqlParameter();
+            taskIdParameter.ParameterName = "@TaskId";
+            taskIdParameter.Value = this.GetId();
+            cmd.Parameters.Add(taskIdParameter);
+            SqlDataReader rdr = cmd.ExecuteReader();
+
+            while(rdr.Read())
+            {
+                this._description = rdr.GetString(1);
+                bool taskComplete;
+                if (rdr.GetByte(2) == 1)
+                {
+                    taskComplete = true;
+                }
+                else
+                {
+                    taskComplete = false;
+                }
+            }
+
+            if (rdr != null)
+            {
+                rdr.Close();
+            }
+
+            if (conn != null)
+            {
+                conn.Close();
+            }
+        }
+
+
         public void Delete()
         {
             SqlConnection conn = DB.Connection();

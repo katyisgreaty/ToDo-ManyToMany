@@ -163,6 +163,29 @@ namespace ToDoList
             Assert.Equal(testList, savedTasks);
         }
 
+        [Fact]
+        public void UpdateProperties_UpdatePropertiesInDatabase_true()
+        {
+            //Arrange
+            string description = "mow the lawn";
+            bool completed = false;
+
+            Task testTask = new Task(description, completed);
+            testTask.Save();
+            string newDescription = "rake leaves";
+            bool newCompleted = true;
+
+            //Act
+            testTask.UpdateProperties(newDescription, newCompleted);
+            Task result = Task.GetAll()[0];
+            Console.WriteLine(result);
+            Console.WriteLine(testTask);
+
+            //Assert
+            Assert.Equal(testTask, result);
+            // Assert.Equal(newDescription, result.GetDescription());
+        }
+
         public void Dispose()
         {
             Task.DeleteAll();
