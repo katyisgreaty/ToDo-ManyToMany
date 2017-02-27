@@ -50,13 +50,13 @@ namespace ToDoList
 
         public int TranslateComplete()
         {
-            if (this._complete == true)
+            if (this._complete == false)
             {
-                return 1;
+                return 0;
             }
             else
             {
-                return 0;
+                return 1;
             }
         }
 
