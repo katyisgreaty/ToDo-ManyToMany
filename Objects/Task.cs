@@ -8,11 +8,14 @@ namespace ToDoList
     {
         private int _id;
         private string _description;
+        private bool _complete;
 
-        public Task(string Description, int Id = 0)
+
+        public Task(string Description, bool Complete = false, int Id = 0)
         {
             _id = Id;
             _description = Description;
+            _complete = Complete;
         }
 
         public override bool Equals(System.Object otherTask)
@@ -25,7 +28,35 @@ namespace ToDoList
                 Task newTask = (Task) otherTask;
                 bool idEquality = this.GetId() == newTask.GetId();
                 bool descriptionEquality = this.GetDescription() == newTask.GetDescription();
-                return (idEquality && descriptionEquality);
+                bool completeEquality = this.GetComplete() == newTask.GetComplete();
+                return (idEquality && descriptionEquality && completeEquality);
+            }
+        }
+
+        public override int GetHashCode()
+        {
+            return this.GetDescription().GetHashCode();
+        }
+
+        public bool GetComplete()
+        {
+            return _complete;
+        }
+
+        public void SetComplete(bool newComplete)
+        {
+            _complete = newComplete;
+        }
+
+        public int TranslateComplete()
+        {
+            if (this._complete == true)
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
             }
         }
 
@@ -33,14 +64,18 @@ namespace ToDoList
         {
             return _id;
         }
+
         public string GetDescription()
         {
             return _description;
         }
+
         public void SetDescription(string newDescription)
         {
             _description = newDescription;
         }
+
+
         public static List<Task> GetAll()
         {
             List<Task> AllTasks = new List<Task>{};
@@ -55,7 +90,15 @@ namespace ToDoList
             {
                 int taskId = rdr.GetInt32(0);
                 string taskDescription = rdr.GetString(1);
-                Task newTask = new Task(taskDescription, taskId);
+                bool taskComplete;
+                if (rdr.GetByte(2) == 1)
+                {
+                    taskComplete = true;
+                }
+                else{
+                    taskComplete = false;
+                }
+                Task newTask = new Task(taskDescription, taskComplete, taskId);
                 AllTasks.Add(newTask);
             }
             if (rdr != null)
@@ -68,18 +111,26 @@ namespace ToDoList
             }
             return AllTasks;
         }
+
+
         public void Save()
         {
             SqlConnection conn = DB.Connection();
             conn.Open();
 
-            SqlCommand cmd = new SqlCommand("INSERT INTO tasks (description) OUTPUT INSERTED.id VALUES (@TaskDescription)", conn);
+            SqlCommand cmd = new SqlCommand("INSERT INTO tasks (description, completed) OUTPUT INSERTED.id VALUES (@TaskDescription, @TaskComplete)", conn);
 
             SqlParameter descriptionParam = new SqlParameter();
             descriptionParam.ParameterName = "@TaskDescription";
             descriptionParam.Value = this.GetDescription();
 
+            SqlParameter completeParam = new SqlParameter();
+            completeParam.ParameterName = "@TaskComplete";
+            completeParam.Value = this.TranslateComplete();
+
             cmd.Parameters.Add(descriptionParam);
+            cmd.Parameters.Add(completeParam);
+
 
             SqlDataReader rdr = cmd.ExecuteReader();
 
@@ -120,13 +171,22 @@ namespace ToDoList
 
             int foundTaskId = 0;
             string foundTaskDescription = null;
+            bool foundTaskComplete = false;
 
             while(rdr.Read())
             {
                 foundTaskId = rdr.GetInt32(0);
                 foundTaskDescription = rdr.GetString(1);
+                if (rdr.GetByte(2) == 1)
+                {
+                    foundTaskComplete = true;
+                }
+                else
+                {
+                    foundTaskComplete = false;
+                }
             }
-            Task foundTask = new Task(foundTaskDescription, foundTaskId);
+            Task foundTask = new Task(foundTaskDescription, foundTaskComplete, foundTaskId);
 
             if (rdr != null)
             {

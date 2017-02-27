@@ -59,7 +59,7 @@ namespace ToDoList
                 model.Add("allCategories", AllCategories);
                 return View["task.cshtml", model];
             };
-            
+
             Get["categories/{id}"] = parameters => {
                 Dictionary<string, object> model = new Dictionary<string, object>();
                 Category SelectedCategory = Category.Find(parameters.id);
@@ -77,6 +77,7 @@ namespace ToDoList
                 task.AddCategory(category);
                 return View["success.cshtml"];
             };
+            
             Post["category/add_task"] = _ => {
                 Category category = Category.Find(Request.Form["category-id"]);
                 Task task = Task.Find(Request.Form["task-id"]);

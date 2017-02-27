@@ -29,6 +29,10 @@ namespace ToDoList
                 return (idEquality && nameEquality);
             }
         }
+        public override int GetHashCode()
+        {
+            return this.GetName().GetHashCode();
+        }
 
         public int GetId()
         {
@@ -200,17 +204,26 @@ namespace ToDoList
                 taskIdParameter.Value = taskId;
                 taskQuery.Parameters.Add(taskIdParameter);
 
-                SqlDataReader queryReader = taskQuery.ExecuteReader();
-                while(queryReader.Read())
+                SqlDataReader newrdr = taskQuery.ExecuteReader();
+                while(newrdr.Read())
                 {
-                    int thisTaskId = queryReader.GetInt32(0);
-                    string taskDescription = queryReader.GetString(1);
-                    Task foundTask = new Task(taskDescription, thisTaskId);
+                    int thisTaskId = newrdr.GetInt32(0);
+                    string taskDescription = newrdr.GetString(1);
+                    bool taskComplete;
+                    if (newrdr.GetByte(2) == 1)
+                    {
+                        taskComplete = true;
+                    }
+                    else
+                    {
+                        taskComplete = false;
+                    }
+                    Task foundTask = new Task(taskDescription, taskComplete, thisTaskId);
                     tasks.Add(foundTask);
                 }
-                if (queryReader != null)
+                if (newrdr != null)
                 {
-                    queryReader.Close();
+                    newrdr.Close();
                 }
             }
             if (conn != null)
