@@ -6,7 +6,7 @@
   <ul>
     @foreach (var task in Model)
     {
-      <li><a href='/tasks/@task.GetId()'>@task.GetDescription()</a> <a href="/tasks/@Model.GetId()/edit">Edit this task</a></li>
+      <li><a href='/tasks/@task.GetId()'>@task.GetDescription()</a> <a href="/tasks/@task.GetId()/edit">Edit this task</a></li>
     }
   </ul>
 }

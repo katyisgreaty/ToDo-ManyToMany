@@ -346,7 +346,12 @@ namespace ToDoList
 
             SqlParameter newCompletedParameter = new SqlParameter();
             newCompletedParameter.ParameterName = "@NewCompleted";
-            newCompletedParameter.Value = this.TranslateComplete();
+            if (newCompleted == true)
+            {
+                newCompletedParameter.Value = 1;
+            } else {
+                newCompletedParameter.Value = 0;
+            }
             cmd.Parameters.Add(newCompletedParameter);
 
             SqlParameter taskIdParameter = new SqlParameter();
@@ -361,11 +366,11 @@ namespace ToDoList
                 bool taskComplete;
                 if (rdr.GetByte(2) == 1)
                 {
-                    taskComplete = true;
+                    this._complete = true;
                 }
                 else
                 {
-                    taskComplete = false;
+                    this._complete = false;
                 }
             }
 

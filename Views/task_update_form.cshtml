@@ -1,10 +1,10 @@
 <h1>Update @Model.GetDescription()</h1>
 <form action="/tasks/@Model.GetId()/updated" method="post">
     <input type="hidden" name="_method" value="PATCH">
-    <label for="task-description">New task description:</label>
-    <input id="task-description" name="task-description" type="text">
+    <label for="new-task-description">New task description:</label>
+    <input id="new-task-description" name="new-task-description" type="text">
     <label for='completed'>Task complete?</label>
-    <select class="form-control" name="completed">
+    <select class="form-control" name="new-completed">
         <option value=true>Completed</option>
         <option value=false>Not yet completed</option>
     </select>

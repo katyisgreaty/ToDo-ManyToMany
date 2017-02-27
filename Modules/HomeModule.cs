@@ -17,6 +17,11 @@ namespace ToDoList
                 return View["tasks.cshtml", AllTasks];
             };
 
+            Get["/tasks/completed"] = _ => {
+                List<Task> CompletedTasks = Task.GetCompleted();
+                return View["tasks_completed.cshtml", CompletedTasks];
+            };
+
             Get["/categories"] = _ => {
                 List<Category> AllCategories = Category.GetAll();
                 return View["categories.cshtml", AllCategories];
@@ -82,6 +87,22 @@ namespace ToDoList
                 Category category = Category.Find(Request.Form["category-id"]);
                 Task task = Task.Find(Request.Form["task-id"]);
                 category.AddTask(task);
+                return View["success.cshtml"];
+            };
+
+            Get["tasks/{id}/edit"] = parameters => {
+                Task SelectedTask = Task.Find(parameters.id);
+                return View["task_update_form.cshtml", SelectedTask];
+            };
+
+            Patch["tasks/{id}/updated"] = parameters => {
+                Task SelectedTask = Task.Find(parameters.id);
+                SelectedTask.UpdateProperties(Request.Form["new-task-description"], Request.Form["new-completed"]);
+                return View["success.cshtml", SelectedTask];
+            };
+
+            Post["/tasks/delete"] =_=> {
+                Task.DeleteAll();
                 return View["success.cshtml"];
             };
         }
