@@ -158,5 +158,87 @@ namespace ToDoList
                 conn.Close();
             }
         }
+
+        public void AddCategory(Category newCategory)
+        {
+            SqlConnection conn = DB.Connection();
+            conn.Open();
+
+            SqlCommand cmd = new SqlCommand("INSERT INTO categories_tasks (category_id, task_id) VALUES (@CategoryId, @TaskId);", conn);
+
+            SqlParameter categoryIdParameter = new SqlParameter();
+            categoryIdParameter.ParameterName = "@CategoryId";
+            categoryIdParameter.Value = newCategory.GetId();
+            cmd.Parameters.Add(categoryIdParameter);
+
+            SqlParameter taskIdParameter = new SqlParameter();
+            taskIdParameter.ParameterName = "@TaskId";
+            taskIdParameter.Value = this.GetId();
+            cmd.Parameters.Add(taskIdParameter);
+
+            cmd.ExecuteNonQuery();
+
+            if (conn != null)
+            {
+                conn.Close();
+            }
+        }
+
+        public List<Category> GetCategories()
+        {
+            SqlConnection conn = DB.Connection();
+            conn.Open();
+
+            SqlCommand cmd = new SqlCommand("SELECT category_id FROM categories_tasks WHERE task_id = @TaskId;", conn);
+
+            SqlParameter taskIdParameter = new SqlParameter();
+            taskIdParameter.ParameterName = "@TaskId";
+            taskIdParameter.Value = this.GetId();
+            cmd.Parameters.Add(taskIdParameter);
+
+            SqlDataReader rdr = cmd.ExecuteReader();
+
+            List<int> categoryIds = new List<int> {};
+
+            while (rdr.Read())
+            {
+                int categoryId = rdr.GetInt32(0);
+                categoryIds.Add(categoryId);
+            }
+            if (rdr != null)
+            {
+                rdr.Close();
+            }
+
+            List<Category> categories = new List<Category> {};
+
+            foreach (int categoryId in categoryIds)
+            {
+                SqlCommand categoryQuery = new SqlCommand("SELECT * FROM categories WHERE id = @CategoryId;", conn);
+
+                SqlParameter categoryIdParameter = new SqlParameter();
+                categoryIdParameter.ParameterName = "@CategoryId";
+                categoryIdParameter.Value = categoryId;
+                categoryQuery.Parameters.Add(categoryIdParameter);
+
+                SqlDataReader queryReader = categoryQuery.ExecuteReader();
+                while (queryReader.Read())
+                {
+                    int thisCategoryId = queryReader.GetInt32(0);
+                    string categoryName = queryReader.GetString(1);
+                    Category foundCategory = new Category(categoryName, thisCategoryId);
+                    categories.Add(foundCategory);
+                }
+                if (queryReader != null)
+                {
+                    queryReader.Close();
+                }
+            }
+            if (conn != null)
+            {
+                conn.Close();
+            }
+            return categories;
+        }
     }
 }
